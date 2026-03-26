@@ -1,0 +1,32 @@
+name: Setup start-blog branch
+
+on:
+  push:
+    branches:
+      - copilot/about-myself-page
+    paths:
+      - "day-1.md"
+
+permissions:
+  contents: write
+
+jobs:
+  create-start-blog:
+    name: Create start-blog branch with day-1.md
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: copilot/about-myself-page
+
+      - name: Create or update start-blog branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B start-blog
+          git push origin start-blog --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
