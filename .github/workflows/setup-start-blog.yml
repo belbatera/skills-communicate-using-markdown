@@ -1,0 +1,41 @@
+name: Setup start-blog branch
+
+on:
+  push:
+    branches:
+      - copilot/about-myself-page
+    paths:
+      - "day-1.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  create-start-blog:
+    name: Create start-blog branch with day-1.md
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: copilot/about-myself-page
+
+      - name: Create start-blog branch via API
+        run: |
+          SHA=$(git rev-parse HEAD)
+          # Try to create start-blog branch pointing to the current HEAD
+          gh api repos/${{ github.repository }}/git/refs \
+            -X POST \
+            -f "ref=refs/heads/start-blog" \
+            -f "sha=$SHA" \
+            || gh api repos/${{ github.repository }}/git/refs/heads/start-blog \
+              -X PATCH \
+              -f "sha=$SHA" \
+              -f "force=true"
+          # force=true is intentional: this exercise helper branch should always
+          # match copilot/about-myself-page to keep the exercise in sync
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
