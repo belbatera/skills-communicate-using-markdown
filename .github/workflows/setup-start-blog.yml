@@ -6,6 +6,7 @@ on:
       - copilot/about-myself-page
     paths:
       - "day-1.md"
+  workflow_dispatch:
 
 permissions:
   contents: write
