@@ -22,11 +22,16 @@ jobs:
           fetch-depth: 0
           ref: copilot/about-myself-page
 
-      - name: Create or update start-blog branch
+      - name: Create start-blog branch via API
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -B start-blog
-          git push origin start-blog --force
+          SHA=$(git rev-parse HEAD)
+          gh api repos/${{ github.repository }}/git/refs \
+            -X POST \
+            -f "ref=refs/heads/start-blog" \
+            -f "sha=$SHA" \
+            || gh api repos/${{ github.repository }}/git/refs/heads/start-blog \
+              -X PATCH \
+              -f "sha=$SHA" \
+              -f "force=true"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
