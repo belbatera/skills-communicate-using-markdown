@@ -26,6 +26,7 @@ jobs:
       - name: Create start-blog branch via API
         run: |
           SHA=$(git rev-parse HEAD)
+          # Try to create start-blog branch pointing to the current HEAD
           gh api repos/${{ github.repository }}/git/refs \
             -X POST \
             -f "ref=refs/heads/start-blog" \
@@ -34,5 +35,7 @@ jobs:
               -X PATCH \
               -f "sha=$SHA" \
               -f "force=true"
+          # force=true is intentional: this exercise helper branch should always
+          # match copilot/about-myself-page to keep the exercise in sync
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
